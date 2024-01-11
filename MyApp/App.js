@@ -1,100 +1,89 @@
-import React, {useMemo} from 'react';
-import {View, Text, Button} from 'react-native';
+import React from "react";
+import { StyleSheet, Text, View } from "react-native";
 
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import { NavigationContainer } from "@react-navigation/native";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createStackNavigator } from "@react-navigation/stack";
 
-import {NavigationContainer, useLinkTo} from '@react-navigation/native';
-import {createStackNavigator} from '@react-navigation/stack';
 
-
-const linking = {
-  config: {
-    screens: {
-      HomeStack: {
-        path: 'stack',
-        initialRouteName: 'Home',
-        screens: {
-          Home: 'home',
-          Profile: {
-            path: 'user/:id/:age',
-            parse: {
-              id: id => `there, ${id}`,
-              age: Number,
-            },
-            stringify: {
-              id: id => id.replace('there, ', ''),
-            },
-          },
-        },
-      },
-      Settings: 'settings',
-    },
-  },
-};
-
-const Home = ({navigation}) => {
-  const linkTo = useLinkTo();
+const Screen = ({ route }) => {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Button
-        title="Go to Wojciech's profile"
-        onPress={() => linkTo('/stack/user/Wojciech/22')}
-      />
-      <Button
-        title="Go to unknown profile"
-        onPress={() => navigation.navigate('Profile')}
-      />
-    </View>
-  );
-};
-
-const Profile = ({route}) => {
-  return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>Hello {route.params?.id || 'Unknown'}!</Text>
-      <Text>
-        Type of age parameter is{' '}
-        {route.params?.age ? typeof route.params.age : 'undefined'}
+    <View style={styles.container}>
+      <Text style={styles.text}>
+        <Text style={{ fontWeight: "bold" }}>Screen Route: </Text>
+        {route.name}
+      </Text>
+      <Text style={styles.text}>
+        <Text style={{ fontWeight: "bold" }}>Params: </Text>
+        {route.params ? JSON.stringify(route.params, 5) : "No Params Passed"}
       </Text>
     </View>
   );
 };
 
-const Settings = () => {
+const NotFound = ({ route }) => {
   return (
-    <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-      <Text>This is the Settings Page.</Text>
+    <View style={styles.container}>
+      <Text style={styles.text}>Not Found</Text>
     </View>
   );
 };
 
-const MyStack = createStackNavigator();
+const app_linking = {
+  config: {
+    screens: {
+      Home: "/",
+      Feed: "feed/:sort?/:type",
+      Menu: {
+        path: "menu",
+        screens: {
+          TabA: "a",
+          TabB: "b",
+        },
+      },
+      NotFound: "*",
+    }
+  },
+};
 
-const HomeStack = () => {
+const Tab = createBottomTabNavigator();
+
+const Stack = createStackNavigator();
+
+const Tabs = () => {
   return (
-    <MyStack.Navigator>
-      <MyStack.Screen name="Home" component={Home} />
-      <MyStack.Screen name="Profile" component={Profile} />
-    </MyStack.Navigator>
+    <Tab.Navigator>
+      <Tab.Screen name="TabA" component={Screen} />
+      <Tab.Screen name="TabB" component={Screen} />
+    </Tab.Navigator>
   );
 };
 
-const MyTabs = createBottomTabNavigator();
-
 export default function App() {
-  const screenOptions = useMemo(
-    () => ({
-      headerShown: false,
-      tabBarIcon: () => null,
-    }),
-    [],
-  );
   return (
-    <NavigationContainer linking={linking}>
-      <MyTabs.Navigator screenOptions={screenOptions}>
-        <MyTabs.Screen name="HomeStack" component={HomeStack} />
-        <MyTabs.Screen name="Settings" component={Settings} />
-      </MyTabs.Navigator>
+    <NavigationContainer  linking={app_linking} >
+      <Stack.Navigator
+        screenOptions={{
+          headerShown: false,
+        }}
+      >
+        <Stack.Screen name="Home" component={Screen} />
+        <Stack.Screen name="Feed" component={Screen} />
+        <Stack.Screen name="Menu" component={Tabs} />
+        <Stack.Screen name="NotFound" component={NotFound} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    fontSize: 20,
+  },
+});
