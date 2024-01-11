@@ -2,7 +2,7 @@ import React, { useMemo } from "react";
 import { View, Text, Button } from "react-native";
 
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import * as Linking from "expo-linking";
+// import * as Linking from "expo-linking";
 
 import {
   NavigationContainer,
@@ -12,10 +12,10 @@ import {
   createStackNavigator,
 } from "@react-navigation/stack";
 
-const prefix = Linking.createURL("/");
+// const prefix = Linking.createURL("/");
 
 const linking = {
-  prefixes: [prefix],
+  // prefixes: [prefix],
   config: {
     screens: {
       HomeStack: {
